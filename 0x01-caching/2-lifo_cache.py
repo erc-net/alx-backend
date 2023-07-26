@@ -1,78 +1,42 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+""" BaseCaching module
 """
-    BaseCache module
-"""
-
 from base_caching import BaseCaching
 
 
 class LIFOCache(BaseCaching):
-    """ LIFOCache define a FIFO algorithm to use cache
-
-      To use:
-      >>> my_cache = BasicCache()
-      >>> my_cache.print_cache()
-      Current cache:
-
-      >>> my_cache.put("A", "Hello")
-      >>> my_cache.print_cache()
-      A: Hello
-
-      >>> print(my_cache.get("A"))
-      Hello
-
-      Ex:
-      >>> print(self.cache_data)
-      {A: "Hello", B: "World", C: "Holberton", D: "School"}
-      >>> my_cache.put("C", "Street")
-      >>> print(self.cache_data)
-      {A: "Hello", B: "World", D: "School",  C: "Street"}
-
-      >>> my_cache.put("F", "COD")
-      DISCARD: C
-      >>> print(self.cache_data)
-      {F: "COD", B: "World", D: "School", F, "COD"}
+    """
+    FIFOCache defines a FIFO caching system
     """
 
     def __init__(self):
-        """ Initiliaze
+        """
+        Initialize the class with the parent's init method
         """
         super().__init__()
+        self.order = []
 
     def put(self, key, item):
         """
-            modify cache data
-
-            Args:
-                key: of the dict
-                item: value of the key
+        Cache a key-value pair
         """
-        if key or item is not None:
-            valuecache = self.get(key)
-            # Make a new
-            if valuecache is None:
-                if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                    keydel = list(self.cache_data.keys())
-                    lenlast = len(keydel) - 1
-                    del self.cache_data[keydel[lenlast]]
-                    print("DISCARD: {}".format(keydel[lenlast]))
-            # If it's None this del the key and after update the same key
-            # If it's wrong fix eliminate and ask
-            else:
-                del self.cache_data[key]
-            # Modify value
+        if key is None or item is None:
+            pass
+        else:
+            length = len(self.cache_data)
+            if length >= BaseCaching.MAX_ITEMS and key not in self.cache_data:
+                print("DISCARD: {}".format(self.order[-1]))
+                del self.cache_data[self.order[-1]]
+                del self.order[-1]
+            if key in self.order:
+                del self.order[self.order.index(key)]
+            self.order.append(key)
             self.cache_data[key] = item
 
     def get(self, key):
         """
-            modify cache data
-
-            Args:
-                key: of the dict
-
-            Return:
-                value of the key
+        Return the value linked to a given key, or None
         """
-
-        valuecache = self.cache_data.get(key)
-        return valuecache
+        if key is not None and key in self.cache_data.keys():
+            return self.cache_data[key]
+        return None
